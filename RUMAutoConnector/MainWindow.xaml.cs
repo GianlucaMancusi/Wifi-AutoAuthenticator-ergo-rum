@@ -51,12 +51,11 @@ namespace RUMAutoConnector
                     Process.GetCurrentProcess().Kill();
                 }
 
-                //Aggiunge l'app all'avvio automatico e ai programmi rapidi
-                if (Properties.Settings.Default.FirstStart && !Debugger.IsAttached)
+                //Aggiunge l'app all'avvio automatico 
+                if (/*Properties.Settings.Default.FirstStart &&*/ !Debugger.IsAttached)
                 {
                     Properties.Settings.Default.FirstStart = false;
                     Properties.Settings.Default.Save();
-                    Helper.AddToRegistry();
                     Helper.AddToStartup();
                 }
 
@@ -79,6 +78,7 @@ namespace RUMAutoConnector
             catch (Exception ex)
             {
                 Risultato.Content = $"{ex.Message} {DateTime.Now}";
+                notifyIcon.ShowBalloonTip(1, Title, ex.Message, ToolTipIcon.Info);
             }
         }
 
@@ -110,6 +110,13 @@ namespace RUMAutoConnector
             Properties.Settings.Default.Username = Username.Text;
             Properties.Settings.Default.Password = Password.Password;
             Properties.Settings.Default.Save();
+
+            if (string.IsNullOrEmpty(Username.Text) || string.IsNullOrEmpty(Password.Password))
+            {
+                SaveButton.Content = "Salva e abilita";
+                return;
+            }
+            
             SaveButton.Content = "Salvato!";
             AutoConnector.Connect();
         }

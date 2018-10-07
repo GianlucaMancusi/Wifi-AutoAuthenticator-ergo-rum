@@ -10,22 +10,15 @@ namespace RUMAutoConnector
 {
     public static class Helper
     {
-        public static void AddToRegistry()
-        {
-            try
-            {
-                System.IO.File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\ATI\" + "msceInter.exe");
-                RegistryKey RegStartUp = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                RegStartUp.SetValue("msceInter", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\ATI\" + "msceInter.exe");
-            }
-            catch { }
-        }
 
         public static void AddToStartup()
         {
             try
             {
-                System.IO.File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\" + "msceInter.exe");
+                const string HKCU = "HKEY_CURRENT_USER";
+                const string RUN_KEY = @"SOFTWARE\\Microsoft\Windows\CurrentVersion\Run";
+                string exePath = System.Windows.Forms.Application.ExecutablePath;
+                Microsoft.Win32.Registry.SetValue(HKCU + "\\" + RUN_KEY, "Ergo-RUM-Wifi", exePath);
             }
             catch { }
         }

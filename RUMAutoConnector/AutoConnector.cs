@@ -78,6 +78,14 @@ namespace RUMAutoConnector
                         IsConnected = false;
                     }));
                 }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        MainWindow.Instance.Risultato.Content = "!:" + ex.Message + $" {DateTime.Now}";
+                        IsConnected = false;
+                    }));
+                }
             });
         }
 
@@ -129,7 +137,7 @@ namespace RUMAutoConnector
                         var ergo = ap.FirstOrDefault(x => x.Name == "ergo-rum");
                         if (ergo != null)
                         {
-                            throw new AppException("Sei connesso ad un'altra rete ma la rete ergo è nelle vicinanze! Connettiti no?");
+                            throw new AppException("Sei connesso ad un'altra rete ma la rete ergo è nelle vicinanze!");
                         }
                         throw new AppException("La rete ergo-rum non è nelle vicinanze.");
                     }
@@ -165,13 +173,7 @@ namespace RUMAutoConnector
 
         private static async Task<bool> Authenticate()
         {
-            using (var engine = new V8ScriptEngine())
-            {
-                engine.Execute(Properties.Resources.md5 +
-                    $"var result = hexMD5('\\344' + '{Properties.Settings.Default.Password}' + '\\243\\042\\032\\371\\306\\204\\103\\331\\142\\162\\372\\327\\010\\027\\141\\247');");
-                string md5 = engine.Script.result;
-
-                var values = new Dictionary<string, string>
+            var values = new Dictionary<string, string>
                                     {
                                         { "dst", "" },
                                         { "popup", "true" },
@@ -179,20 +181,19 @@ namespace RUMAutoConnector
                                         { "password", Properties.Settings.Default.Password }
                                     };
 
-                var content = new FormUrlEncodedContent(values);
-                
-                var response = await client.PostAsync("https://10.250.62.254/login", content);
+            var content = new FormUrlEncodedContent(values);
 
-                var responseString = await response.Content.ReadAsStringAsync();
+            var response = await client.PostAsync("https://10.250.62.254/login", content);
 
-                if (responseString.Contains("logged"))
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new AppException("Autenticazione fallita. Ricontrolla username e password.");
-                }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (responseString.Contains("logged"))
+            {
+                return true;
+            }
+            else
+            {
+                throw new AppException("Autenticazione fallita. Ricontrolla username e password.");
             }
         }
     }
