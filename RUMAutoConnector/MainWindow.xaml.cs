@@ -25,6 +25,22 @@ namespace RUMAutoConnector
             Instance = this;
             InitializeComponent();
 
+            //Avviare solo un'app per volta
+            if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            {
+                MessageBox.Show("Programma già avviato. Probabilmente è attivo nella notifiche", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Error);
+                Process.GetCurrentProcess().Kill();
+            }
+
+            //Aggiunge l'app all'avvio automatico e ai programmi rapidi
+            if (Properties.Settings.Default.FirstStart && !Debugger.IsAttached)
+            {
+                Properties.Settings.Default.FirstStart = false;
+                Properties.Settings.Default.Save();
+                Helper.AddToRegistry();
+                Helper.AddToStartup();
+            }
+
             //Collega il delegato che si sottoscrive all'evento del sistema operativo di cambio di rete wifi
             NetworkChange.NetworkAvailabilityChanged += AutoConnector.Connect;
 
@@ -93,7 +109,7 @@ namespace RUMAutoConnector
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (!AutoConnector.CheckForInternetConnection())
+            if (!Properties.Settings.Default.Disabled && !AutoConnector.CheckForInternetConnection())
                 AutoConnector.Connect();
         }
 
