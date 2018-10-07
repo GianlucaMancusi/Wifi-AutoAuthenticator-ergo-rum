@@ -12,6 +12,8 @@ So I decided to automate the authentication process to keep the connection alway
 - It **starts automatically** when the pc is turned on.
 - You can *hide* it as an icon.
 
+![Software screen](ergo-rum-desktop.png)
+
 ### Help in development
 If you notice any problems, bugs, or you are planning to integrate other functions then do not hesitate to pull request.
 
