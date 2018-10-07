@@ -11,6 +11,7 @@ So I decided to automate the authentication process to keep the connection alway
 - If the network disconnects, it **reconnects instantly**
 - It **starts automatically** when the pc is turned on.
 - You can *hide* it as an icon.
+
 ![Software screen](ergo-rum-desktop.png)
 
 ### Help in development
