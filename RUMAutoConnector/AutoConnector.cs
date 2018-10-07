@@ -19,6 +19,10 @@ namespace RUMAutoConnector
     public class AutoConnector
     {
         public const int CHECK_AFTER_SECONDS = 10;
+        public static bool IsConnected = false;
+
+        public static Wifi wifi = new Wifi();
+        public static WlanClient wlan = new WlanClient();
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -37,6 +41,7 @@ namespace RUMAutoConnector
                 if(!MainWindow.Instance.IsDataSaved())
                 {
                     MainWindow.Instance.Risultato.Content = $"Sono in attesa di Username e Password. {DateTime.Now}";
+                    IsConnected = false;
                     return;
                 }
                 if (Properties.Settings.Default.Disabled)
@@ -53,10 +58,16 @@ namespace RUMAutoConnector
                     if (result)
                     {
                         MainWindow.Instance.Risultato.Content = $"Connesso con successo alle {DateTime.Now}";
+                        if(!IsConnected)
+                        {
+                            MainWindow.Instance.notifyIcon.ShowBalloonTip(1, MainWindow.Instance.Title, MainWindow.Instance.Risultato.Content.ToString(), System.Windows.Forms.ToolTipIcon.Info);
+                            IsConnected = true;
+                        }
                     }
                     else
                     {
                         MainWindow.Instance.Risultato.Content = $"Non riesco a connettermi a nessuna rete. {DateTime.Now}";
+                        IsConnected = false;
                     }
                 }
                 catch (AppException ex)
@@ -64,6 +75,7 @@ namespace RUMAutoConnector
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
                         MainWindow.Instance.Risultato.Content = ex.Message + $" {DateTime.Now}";
+                        IsConnected = false;
                     }));
                 }
             });
@@ -93,13 +105,12 @@ namespace RUMAutoConnector
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-
-            WlanClient c = new WlanClient();
-            if (c.Interfaces.First() != null)
+            
+            if (wlan.Interfaces.First() != null)
             {
-                if (c.Interfaces.First().InterfaceState != WlanInterfaceState.Disconnected)
+                if (wlan.Interfaces.First().InterfaceState != WlanInterfaceState.Disconnected)
                 {
-                    var interfaceFound = c.Interfaces.FirstOrDefault(x => x.CurrentConnection.profileName == "ergo-rum");
+                    var interfaceFound = wlan.Interfaces.FirstOrDefault(x => x.CurrentConnection.profileName == "ergo-rum");
                     if (interfaceFound != null)
                     {
                         if (interfaceFound.CurrentConnection.isState == WlanInterfaceState.Connected)
@@ -114,7 +125,6 @@ namespace RUMAutoConnector
                     }
                     else
                     {
-                        Wifi wifi = new Wifi();
                         var ap = wifi.GetAccessPoints();
                         var ergo = ap.FirstOrDefault(x => x.Name == "ergo-rum");
                         if (ergo != null)
@@ -126,7 +136,6 @@ namespace RUMAutoConnector
                 }
                 else
                 {
-                    Wifi wifi = new Wifi();
                     var ap = wifi.GetAccessPoints();
                     var ergo = ap.FirstOrDefault(x => x.Name == "ergo-rum");
                     if(ergo != null)

@@ -9,14 +9,38 @@
         Title="RUM Auto Wifi Connector" Height="450" Width="800" ResizeMode="CanMinimize">
     <Grid>
         <Label Content="Rum Auto connector&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18" FontFamily="Century Gothic"/>
-        <Label Content="Inserisci le tue credenziali. E connettiti al wifi ergo-rum. &#xA;Questo programma ti connetterà automaticamente senza inserire le credenziali manualmente&#xD;&#xA;Implementa l'autoautenticazione. Sviluppato da Gianluca Mancusi.&#xA;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Height="69"/>
+        <Label Content="Inserisci le tue credenziali. E connettiti al wifi ergo-rum. &#xA;Questo programma ti connetterà automaticamente senza inserire le credenziali manualmente&#xA;Implementa l'auto-autenticazione. &#xA;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Height="69" Focusable="True"/>
         <Label Content="Username:" HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="Username" HorizontalAlignment="Left" Height="21" Margin="81,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.5"/>
         <Label Content="Password:" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top"/>
         <PasswordBox x:Name="Password" HorizontalAlignment="Left" Margin="81,182,0,0" VerticalAlignment="Top" Width="120" Height="21"/>
         <Button x:Name="SaveButton" Content="Salva e abilita" HorizontalAlignment="Left" Margin="81,227,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
-        <Label x:Name="Stato" Content="Stato: non hai memorizzato credenziali di accesso" HorizontalAlignment="Left" Margin="220,224,0,0" VerticalAlignment="Top"/>
         <Label x:Name="Risultato" Content="" HorizontalAlignment="Left" Margin="81,266,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
         <Button x:Name="Disabilita" Content="Disabilita il servizio" HorizontalAlignment="Left" Margin="81,308,0,0" VerticalAlignment="Top" Width="133" FontSize="11" FontWeight="Bold" FontStyle="Italic" Click="Disabilita_Click"/>
+        <TabControl HorizontalAlignment="Left" Height="223" Margin="535,69,0,0" VerticalAlignment="Top" Width="249">
+            <TabItem Header="Info" Height="22" VerticalAlignment="Top">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Connesso a un wifi:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134"/>
+                    <Label x:Name="ConnessoAWifi" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104"/>
+                    <Label Content="Interfaccia connessa:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134" Margin="0,26,0,0"/>
+                    <Label x:Name="InterfacciaConnessa" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,26,0,0"/>
+                    <Label Content="Connesso ad ergo-rum:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134" Margin="0,52,0,0"/>
+                    <Label x:Name="ConnessoAdErgoRum" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,52,0,0"/>
+                    <Label Content="Connesso ad internet:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134" Margin="0,78,0,0"/>
+                    <Label x:Name="ConnessoAdInternet" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,78,0,0"/>
+                    <Label Content="Qualità del segnale:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134" Margin="0,104,0,0"/>
+                    <Label x:Name="Segnale" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,104,0,0"/>
+                    <Label Content="Sicurezza:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="134" Margin="0,130,0,0"/>
+                    <Label x:Name="Sicurezza" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,130,0,0"/>
+                    <Label Content="Velocità di connessione:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="139" Margin="0,156,0,0"/>
+                    <Label x:Name="ConnessioneSpeed" Content="calcolo..." VerticalAlignment="Top" HorizontalAlignment="Right" Width="104" Margin="0,156,0,0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Statistiche">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Qui saranno visibili info statistiche" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

@@ -70,5 +70,17 @@ namespace RUMAutoConnector.Properties {
                 this["FirstStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FirstHide {
+            get {
+                return ((bool)(this["FirstHide"]));
+            }
+            set {
+                this["FirstHide"] = value;
+            }
+        }
     }
 }

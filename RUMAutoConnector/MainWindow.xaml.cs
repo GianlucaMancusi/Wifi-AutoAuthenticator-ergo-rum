@@ -7,16 +7,21 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace RUMAutoConnector
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IDisposable
     {
         public static MainWindow Instance;
+
+        public NotifyIcon notifyIcon;
+        public StatisticsManager statistics;
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -27,10 +32,22 @@ namespace RUMAutoConnector
 
             try
             {
+                Risultato.Content = "Sto avviando il servizio...";
+
+                //Crea icona di notifica
+                notifyIcon = new System.Windows.Forms.NotifyIcon
+                {
+                    Visible = true,
+                    Icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                    Text = Title
+                };
+                notifyIcon.Click += NotifyIcon_Click;
+                notifyIcon.BalloonTipClicked += NotifyIcon_Click;
+
                 //Avviare solo un'app per volta
                 if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
                 {
-                    MessageBox.Show("Programma già avviato. Probabilmente è attivo nella notifiche", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show("Programma già avviato. Probabilmente è attivo nella notifiche", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Error);
                     Process.GetCurrentProcess().Kill();
                 }
 
@@ -51,21 +68,39 @@ namespace RUMAutoConnector
 
                 //Carica i dati e lo stato attuale
                 LoadSavedInput();
-                UpdateStato();
 
                 //Inizia a eseguire il codice di check di connessione ogni 15 secondi per sicurezza
                 StartDispatcherTimer();
+                notifyIcon.ShowBalloonTip(1, Title, Risultato.Content.ToString(), ToolTipIcon.Info);
+
+                //Avvio il sistema di statistiche
+                statistics = new StatisticsManager();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Risultato.Content = $"{ex.Message} {DateTime.Now}";
             }
         }
 
+        private void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
+
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == System.Windows.WindowState.Minimized)
-                this.Hide();
+            {
+                Hide();
+                if(Properties.Settings.Default.FirstHide)
+                {
+                    Properties.Settings.Default.FirstHide = false;
+                    Properties.Settings.Default.Save();
+                    notifyIcon.ShowBalloonTip(1, Title, "La finestra rimarrà nascosta tra le icone", ToolTipIcon.Info);
+                }
+                return;
+            }
 
             base.OnStateChanged(e);
         }
@@ -75,22 +110,8 @@ namespace RUMAutoConnector
             Properties.Settings.Default.Username = Username.Text;
             Properties.Settings.Default.Password = Password.Password;
             Properties.Settings.Default.Save();
-
-            UpdateStato();
-        }
-
-        private void UpdateStato()
-        {
-            string stato;
-            if (IsDataSaved())
-            {
-                stato = "hai salvato delle credeziali d'accesso. Tenterò di connettermi.";
-            }
-            else
-            {
-                stato = "non hai memorizzato credenziali di accesso";
-            }
-            Stato.Content = $"Stato: {stato}";
+            SaveButton.Content = "Salvato!";
+            AutoConnector.Connect();
         }
 
         private void LoadSavedInput()
@@ -138,7 +159,7 @@ namespace RUMAutoConnector
             if (Properties.Settings.Default.Disabled)
             {
                 Disabilita.Content = "Abilita il servizio";
-                MainWindow.Instance.Risultato.Content = $"Servizio disabilitato. {DateTime.Now}";
+                Risultato.Content = $"Servizio disabilitato. {DateTime.Now}";
             }
             else
             {
@@ -146,5 +167,40 @@ namespace RUMAutoConnector
                 AutoConnector.Connect();
             }
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    statistics.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~MainWindow() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
