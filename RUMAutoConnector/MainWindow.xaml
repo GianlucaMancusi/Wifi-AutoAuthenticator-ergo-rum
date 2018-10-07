@@ -1,0 +1,22 @@
+﻿<Window x:Name="window" x:Class="RUMAutoConnector.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:local="clr-namespace:RUMAutoConnector"
+        mc:Ignorable="d"
+        Title="RUM Auto Wifi Connector" Height="450" Width="800" ResizeMode="CanMinimize">
+    <Grid>
+        <Label Content="Rum Auto connector&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18" FontFamily="Century Gothic"/>
+        <Label Content="Inserisci le tue credenziali. E connettiti al wifi ergo-rum. &#xA;Questo programma ti connetterà automaticamente senza inserire le credenziali manualmente&#xD;&#xA;Implementa l'autoautenticazione. Sviluppato da Gianluca Mancusi.&#xA;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Height="69"/>
+        <Label Content="Username:" HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="Username" HorizontalAlignment="Left" Height="21" Margin="81,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.5"/>
+        <Label Content="Password:" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top"/>
+        <PasswordBox x:Name="Password" HorizontalAlignment="Left" Margin="81,182,0,0" VerticalAlignment="Top" Width="120" Height="21"/>
+        <Button x:Name="SaveButton" Content="Salva e abilita" HorizontalAlignment="Left" Margin="81,227,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+        <Label x:Name="Stato" Content="Stato: non hai memorizzato credenziali di accesso" HorizontalAlignment="Left" Margin="220,224,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="Risultato" Content="" HorizontalAlignment="Left" Margin="81,266,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
+        <Button x:Name="Disabilita" Content="Disabilita il servizio" HorizontalAlignment="Left" Margin="81,308,0,0" VerticalAlignment="Top" Width="133" FontSize="11" FontWeight="Bold" FontStyle="Italic" Click="Disabilita_Click"/>
+    </Grid>
+</Window>
