@@ -4,47 +4,66 @@ using SimpleWifi.Win32;
 using SimpleWifi.Win32.Interop;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace RUMAutoConnector
 {
+    /// <summary>
+    /// Classe che gestisce la connessione al wifi ergo
+    /// </summary>
     public class AutoConnector
     {
+        public const int CHECK_AFTER_SECONDS = 10;
+
         private static readonly HttpClient client = new HttpClient();
 
+        /// <summary>
+        /// Metodo che richiama un tentativo di connessione al wifi ergo
+        /// </summary>
         public static void Connect() => Connect(null, null);
 
+        /// <summary>
+        /// Metodo che richiama un tentativo di connessione al wifi ergo usato per sottoscriversi agli eventi
+        /// </summary>
         public static void Connect(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.Disabled)
-                return;
-
             Application.Current.Dispatcher.Invoke(async () =>
             {
+                if(!MainWindow.Instance.IsDataSaved())
+                {
+                    MainWindow.Instance.Risultato.Content = $"Sono in attesa di Username e Password. {DateTime.Now}";
+                    return;
+                }
+                if (Properties.Settings.Default.Disabled)
+                {
+                    MainWindow.Instance.Risultato.Content = $"Il servizio risulta disabilitato. {DateTime.Now}";
+                    return;
+                }
+
+                MainWindow.Instance.Risultato.Content = $"Tentativo di connessione in corso... {DateTime.Now}";
+
                 try
                 {
                     bool result = await Request();
                     if (result)
                     {
-                        MainWindow.Instance.Risultato.Content = "Connesso con successo alle " + DateTime.Now + "!";
+                        MainWindow.Instance.Risultato.Content = $"Connesso con successo alle {DateTime.Now}";
                     }
                     else
                     {
-                        MainWindow.Instance.Risultato.Content = "Non riesco a connettermi a nessuna rete.";
+                        MainWindow.Instance.Risultato.Content = $"Non riesco a connettermi a nessuna rete. {DateTime.Now}";
                     }
                 }
                 catch (AppException ex)
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        MainWindow.Instance.Risultato.Content = ex.Message;
+                        MainWindow.Instance.Risultato.Content = ex.Message + $" {DateTime.Now}";
                     }));
                 }
             });
@@ -55,7 +74,7 @@ namespace RUMAutoConnector
             try
             {
                 Ping myPing = new Ping();
-                String host = "google.com";
+                string host = "google.com";
                 byte[] buffer = new byte[32];
                 int timeout = 1000;
                 PingOptions pingOptions = new PingOptions();

@@ -25,34 +25,41 @@ namespace RUMAutoConnector
             Instance = this;
             InitializeComponent();
 
-            //Avviare solo un'app per volta
-            if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            try
             {
-                MessageBox.Show("Programma già avviato. Probabilmente è attivo nella notifiche", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Error);
-                Process.GetCurrentProcess().Kill();
-            }
+                //Avviare solo un'app per volta
+                if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+                {
+                    MessageBox.Show("Programma già avviato. Probabilmente è attivo nella notifiche", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Process.GetCurrentProcess().Kill();
+                }
 
-            //Aggiunge l'app all'avvio automatico e ai programmi rapidi
-            if (Properties.Settings.Default.FirstStart && !Debugger.IsAttached)
+                //Aggiunge l'app all'avvio automatico e ai programmi rapidi
+                if (Properties.Settings.Default.FirstStart && !Debugger.IsAttached)
+                {
+                    Properties.Settings.Default.FirstStart = false;
+                    Properties.Settings.Default.Save();
+                    Helper.AddToRegistry();
+                    Helper.AddToStartup();
+                }
+
+                //Collega il delegato che si sottoscrive all'evento del sistema operativo di cambio di rete wifi
+                NetworkChange.NetworkAvailabilityChanged += AutoConnector.Connect;
+
+                //All'avvio tenta la connessione rapida se il servizio è abilitato
+                UpdateDisabilitaServizioButton();
+
+                //Carica i dati e lo stato attuale
+                LoadSavedInput();
+                UpdateStato();
+
+                //Inizia a eseguire il codice di check di connessione ogni 15 secondi per sicurezza
+                StartDispatcherTimer();
+            }
+            catch(Exception ex)
             {
-                Properties.Settings.Default.FirstStart = false;
-                Properties.Settings.Default.Save();
-                Helper.AddToRegistry();
-                Helper.AddToStartup();
+                Risultato.Content = $"{ex.Message} {DateTime.Now}";
             }
-
-            //Collega il delegato che si sottoscrive all'evento del sistema operativo di cambio di rete wifi
-            NetworkChange.NetworkAvailabilityChanged += AutoConnector.Connect;
-
-            //All'avvio tenta la connessione rapida se il servizio è abilitato
-            UpdateDisabilitaServizioButton();
-
-            //Carica i dati e lo stato attuale
-            LoadSavedInput();
-            UpdateStato();
-
-            //Inizia a eseguire il codice di check di connessione ogni 15 secondi per sicurezza
-            StartDispatcherTimer();
         }
 
         protected override void OnStateChanged(EventArgs e)
@@ -96,11 +103,11 @@ namespace RUMAutoConnector
         {
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 15);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, AutoConnector.CHECK_AFTER_SECONDS);
             dispatcherTimer.Start();
         }
 
-        private bool IsDataSaved()
+        public bool IsDataSaved()
         {
             return !string.IsNullOrEmpty(Properties.Settings.Default.Username) &&
                 !string.IsNullOrEmpty(Properties.Settings.Default.Password);
@@ -109,8 +116,7 @@ namespace RUMAutoConnector
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (!Properties.Settings.Default.Disabled && !AutoConnector.CheckForInternetConnection())
-                AutoConnector.Connect();
+            AutoConnector.Connect();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -132,6 +138,7 @@ namespace RUMAutoConnector
             if (Properties.Settings.Default.Disabled)
             {
                 Disabilita.Content = "Abilita il servizio";
+                MainWindow.Instance.Risultato.Content = $"Servizio disabilitato. {DateTime.Now}";
             }
             else
             {
