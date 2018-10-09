@@ -20,6 +20,7 @@ namespace RUMAutoConnector
     {
         public const int CHECK_AFTER_SECONDS = 10;
         public static bool IsConnected = false;
+        public static bool NotifiedConnectionSuccessOneTime = false;
 
         public static Wifi wifi = new Wifi();
         public static WlanClient wlan = new WlanClient();
@@ -58,10 +59,11 @@ namespace RUMAutoConnector
                     if (result)
                     {
                         MainWindow.Instance.Risultato.Content = $"Connesso con successo alle {DateTime.Now}";
-                        if(!IsConnected)
+                        if(!IsConnected && !NotifiedConnectionSuccessOneTime)
                         {
                             MainWindow.Instance.notifyIcon.ShowBalloonTip(1, MainWindow.Instance.Title, MainWindow.Instance.Risultato.Content.ToString(), System.Windows.Forms.ToolTipIcon.Info);
                             IsConnected = true;
+                            NotifiedConnectionSuccessOneTime = true;
                         }
                     }
                     else
