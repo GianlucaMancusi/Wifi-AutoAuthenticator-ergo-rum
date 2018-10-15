@@ -17,6 +17,7 @@
         <Button x:Name="SaveButton" Content="Salva e abilita" HorizontalAlignment="Left" Margin="81,227,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
         <Label x:Name="Risultato" Content="" HorizontalAlignment="Left" Margin="81,266,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
         <Button x:Name="Disabilita" Content="Disabilita il servizio" HorizontalAlignment="Left" Margin="81,308,0,0" VerticalAlignment="Top" Width="133" FontSize="11" FontWeight="Bold" FontStyle="Italic" Click="Disabilita_Click"/>
+        
         <TabControl HorizontalAlignment="Left" Height="223" Margin="535,69,0,0" VerticalAlignment="Top" Width="249">
             <TabItem Header="Info" Height="22" VerticalAlignment="Top">
                 <Grid Background="#FFE5E5E5">
@@ -42,5 +43,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <CheckBox x:Name="Notifications" Content="Abilita notifiche di connessione" HorizontalAlignment="Left" Margin="535,297,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked" IsChecked="True"/>
     </Grid>
 </Window>

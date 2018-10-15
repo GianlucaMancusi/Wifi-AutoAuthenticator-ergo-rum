@@ -61,7 +61,7 @@ namespace RUMAutoConnector
                         MainWindow.Instance.Risultato.Content = $"Connesso con successo alle {DateTime.Now}";
                         if(!IsConnected && !NotifiedConnectionSuccessOneTime)
                         {
-                            MainWindow.Instance.notifyIcon.ShowBalloonTip(1, MainWindow.Instance.Title, MainWindow.Instance.Risultato.Content.ToString(), System.Windows.Forms.ToolTipIcon.Info);
+                            MainWindow.Instance.notifyIcon.ShowNotify(MainWindow.Instance.Title, MainWindow.Instance.Risultato.Content.ToString());
                             IsConnected = true;
                             NotifiedConnectionSuccessOneTime = true;
                         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace RUMAutoConnector
 {
@@ -45,6 +46,12 @@ namespace RUMAutoConnector
         public static string ToPrettySize(this int value, int decimalPlaces = 0)
         {
             return ToPrettySize((long)value,decimalPlaces);
+        }
+
+        public static void ShowNotify(this NotifyIcon icon, string Title, string Message)
+        {
+            if(Properties.Settings.Default.Notifications)
+                icon.ShowBalloonTip(1, Title, Message, ToolTipIcon.Info);
         }
     }
 }

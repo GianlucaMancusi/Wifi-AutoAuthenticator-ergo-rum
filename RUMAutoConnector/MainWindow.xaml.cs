@@ -70,7 +70,7 @@ namespace RUMAutoConnector
 
                 //Inizia a eseguire il codice di check di connessione ogni 15 secondi per sicurezza
                 StartDispatcherTimer();
-                notifyIcon.ShowBalloonTip(1, Title, Risultato.Content.ToString(), ToolTipIcon.Info);
+                notifyIcon.ShowNotify(Title, Risultato.Content.ToString());
 
                 //Avvio il sistema di statistiche
                 statistics = new StatisticsManager();
@@ -78,7 +78,7 @@ namespace RUMAutoConnector
             catch (Exception ex)
             {
                 Risultato.Content = $"{ex.Message} {DateTime.Now}";
-                notifyIcon.ShowBalloonTip(1, Title, ex.Message, ToolTipIcon.Info);
+                notifyIcon.ShowNotify(Title, ex.Message);
             }
         }
 
@@ -209,5 +209,12 @@ namespace RUMAutoConnector
             // GC.SuppressFinalize(this);
         }
         #endregion
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Notifications = !Properties.Settings.Default.Notifications;
+            Properties.Settings.Default.Save();
+            Notifications.IsChecked = Properties.Settings.Default.Notifications;
+        }
     }
 }
