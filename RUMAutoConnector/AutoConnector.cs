@@ -18,6 +18,8 @@ namespace RUMAutoConnector
     /// </summary>
     public class AutoConnector
     {
+        public const string SSID = "ergo-rum";
+
         public const int CHECK_AFTER_SECONDS = 10;
         public static bool IsConnected = false;
         public static bool NotifiedConnectionSuccessOneTime = false;
@@ -41,34 +43,34 @@ namespace RUMAutoConnector
             {
                 if(!MainWindow.Instance.IsDataSaved())
                 {
-                    MainWindow.Instance.Risultato.Content = $"Sono in attesa di Username e Password. {DateTime.Now}";
+                    MainWindow.Instance.Risultato.Text = "Sono in attesa di Username e Password.".Dateify();
                     IsConnected = false;
                     return;
                 }
                 if (Properties.Settings.Default.Disabled)
                 {
-                    MainWindow.Instance.Risultato.Content = $"Il servizio risulta disabilitato. {DateTime.Now}";
+                    MainWindow.Instance.Risultato.Text = "Il servizio risulta disabilitato.".Dateify();
                     return;
                 }
 
-                MainWindow.Instance.Risultato.Content = $"Tentativo di connessione in corso... {DateTime.Now}";
+                MainWindow.Instance.Risultato.Text = "Tentativo di connessione in corso...".Dateify();
 
                 try
                 {
                     bool result = await Request();
                     if (result)
                     {
-                        MainWindow.Instance.Risultato.Content = $"Connesso con successo alle {DateTime.Now}";
+                        MainWindow.Instance.Risultato.Text = "Connesso con successo alle".Dateify();
                         if(!IsConnected && !NotifiedConnectionSuccessOneTime)
                         {
-                            MainWindow.Instance.notifyIcon.ShowNotify(MainWindow.Instance.Title, MainWindow.Instance.Risultato.Content.ToString());
+                            MainWindow.Instance.notifyIcon.ShowNotify(MainWindow.Instance.Title, MainWindow.Instance.Risultato.Text.ToString());
                             IsConnected = true;
                             NotifiedConnectionSuccessOneTime = true;
                         }
                     }
                     else
                     {
-                        MainWindow.Instance.Risultato.Content = $"Non riesco a connettermi a nessuna rete. {DateTime.Now}";
+                        MainWindow.Instance.Risultato.Text = "Non riesco a connettermi a nessuna rete.".Dateify();
                         IsConnected = false;
                     }
                 }
@@ -76,7 +78,7 @@ namespace RUMAutoConnector
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        MainWindow.Instance.Risultato.Content = ex.Message + $" {DateTime.Now}";
+                        MainWindow.Instance.Risultato.Text = ex.Message.Dateify();
                         IsConnected = false;
                     }));
                 }
@@ -84,7 +86,7 @@ namespace RUMAutoConnector
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        MainWindow.Instance.Risultato.Content = "!:" + ex.Message + $" {DateTime.Now}";
+                        MainWindow.Instance.Risultato.Text = "!"+ex.Message.Dateify();
                         IsConnected = false;
                     }));
                 }
@@ -120,7 +122,7 @@ namespace RUMAutoConnector
             {
                 if (wlan.Interfaces.First().InterfaceState != WlanInterfaceState.Disconnected)
                 {
-                    var interfaceFound = wlan.Interfaces.FirstOrDefault(x => x.CurrentConnection.profileName == "ergo-rum");
+                    var interfaceFound = wlan.Interfaces.FirstOrDefault(x => x.CurrentConnection.profileName == SSID);
                     if (interfaceFound != null)
                     {
                         if (interfaceFound.CurrentConnection.isState == WlanInterfaceState.Connected)
@@ -129,25 +131,25 @@ namespace RUMAutoConnector
                             {
                                 return await Authenticate();
                             }
-                            else throw new AppException("Sei connesso alla rete ergo-rum.");
+                            else throw new AppException($"Sei connesso alla rete {SSID}.");
                         }
-                        else throw new AppException("Prova a riconnetterti alla rete ergo-rum");
+                        else throw new AppException($"Prova a riconnetterti alla rete {SSID}");
                     }
                     else
                     {
                         var ap = wifi.GetAccessPoints();
-                        var ergo = ap.FirstOrDefault(x => x.Name == "ergo-rum");
+                        var ergo = ap.FirstOrDefault(x => x.Name == SSID);
                         if (ergo != null)
                         {
                             throw new AppException("Sei connesso ad un'altra rete ma la rete ergo è nelle vicinanze!");
                         }
-                        throw new AppException("La rete ergo-rum non è nelle vicinanze.");
+                        throw new AppException($"La rete {SSID} non è nelle vicinanze.");
                     }
                 }
                 else
                 {
                     var ap = wifi.GetAccessPoints();
-                    var ergo = ap.FirstOrDefault(x => x.Name == "ergo-rum");
+                    var ergo = ap.FirstOrDefault(x => x.Name == SSID);
                     if(ergo != null)
                     {
                         if (!ergo.IsConnected)
@@ -163,11 +165,11 @@ namespace RUMAutoConnector
                             }
                             else
                             {
-                                throw new AppException("Non sono riuscito a connettermi automaticamente alla rete. Prova manualmente.");
+                                throw new AppException("Non sono riuscito a connettermi automaticamente alla rete. Prova manualmente :(");
                             }
                         }
                     }
-                    throw new AppException("La rete ergo-rum non è nelle vicinanze.");
+                    throw new AppException($"La rete {SSID} non è nelle vicinanze.");
                 }
             }
             else throw new AppException("Non riesco ad usare il modulo wifi. Hai una scheda di rete nel tuo pc?");
@@ -192,6 +194,10 @@ namespace RUMAutoConnector
             if (responseString.Contains("logged"))
             {
                 return true;
+            }
+            else if (responseString.Contains("RADIUS server is not responding"))
+            {
+                throw new AppException("La rete RUM sembra avere dei problemi. Il server RADIUS non risponde, quindi non è un problema del tuo pc. Contattare l'assistenza.");
             }
             else
             {

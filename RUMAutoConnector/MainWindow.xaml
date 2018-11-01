@@ -6,18 +6,18 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:RUMAutoConnector"
         mc:Ignorable="d"
-        Title="RUM Auto Wifi Connector" Height="450" Width="800" ResizeMode="CanMinimize">
+        Title="RUM Auto Wifi Connector" Height="450" Width="800" ResizeMode="CanMinimize" FontFamily="Calibri">
     <Grid>
         <Label Content="Rum Auto connector&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="18" FontFamily="Century Gothic"/>
         <Label Content="Inserisci le tue credenziali. E connettiti al wifi ergo-rum. &#xA;Questo programma ti connetterà automaticamente senza inserire le credenziali manualmente&#xA;Implementa l'auto-autenticazione. &#xA;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Height="69" Focusable="True"/>
         <Label Content="Username:" HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="Username" HorizontalAlignment="Left" Height="21" Margin="81,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.5"/>
+        <TextBox x:Name="Username" HorizontalAlignment="Left" Height="21" Margin="81,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="153" RenderTransformOrigin="0.5,0.5" TextChanged="Username_TextChanged"/>
         <Label Content="Password:" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top"/>
-        <PasswordBox x:Name="Password" HorizontalAlignment="Left" Margin="81,182,0,0" VerticalAlignment="Top" Width="120" Height="21"/>
-        <Button x:Name="SaveButton" Content="Salva e abilita" HorizontalAlignment="Left" Margin="81,227,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
-        <Label x:Name="Risultato" Content="" HorizontalAlignment="Left" Margin="81,266,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-        <Button x:Name="Disabilita" Content="Disabilita il servizio" HorizontalAlignment="Left" Margin="81,308,0,0" VerticalAlignment="Top" Width="133" FontSize="11" FontWeight="Bold" FontStyle="Italic" Click="Disabilita_Click"/>
-        
+        <PasswordBox x:Name="Password" HorizontalAlignment="Left" Margin="81,182,0,0" VerticalAlignment="Top" Width="153" Height="21" PasswordChanged="Password_PasswordChanged"/>
+        <Button x:Name="SaveButton" Content="Salva e abilita" HorizontalAlignment="Left" Margin="81,219,0,0" VerticalAlignment="Top" Width="153" Click="Button_Click" Height="21" FontSize="14"/>
+        <TextBlock x:Name="Risultato" Text="" HorizontalAlignment="Left" Margin="81,280,0,0" VerticalAlignment="Top" Padding="0" TextWrapping="Wrap" Width="433" Height="120"/>
+        <Button x:Name="Disabilita" Content="Disabilita il servizio" HorizontalAlignment="Left" Margin="535,317,0,0" VerticalAlignment="Top" Width="249" Height="21" FontSize="14" Click="Disabilita_Click"/>
+
         <TabControl HorizontalAlignment="Left" Height="223" Margin="535,69,0,0" VerticalAlignment="Top" Width="249">
             <TabItem Header="Info" Height="22" VerticalAlignment="Top">
                 <Grid Background="#FFE5E5E5">
@@ -44,5 +44,6 @@
             </TabItem>
         </TabControl>
         <CheckBox x:Name="Notifications" Content="Abilita notifiche di connessione" HorizontalAlignment="Left" Margin="535,297,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked" IsChecked="True"/>
+        <Label Content="Stato attuale dell'applicazione:" HorizontalAlignment="Left" Margin="81,256,0,0" VerticalAlignment="Top" Padding="0" FontWeight="SemiBold"/>
     </Grid>
 </Window>

@@ -32,7 +32,7 @@ namespace RUMAutoConnector
 
             try
             {
-                Risultato.Content = "Sto avviando il servizio...";
+                Risultato.Text = "Sto avviando il servizio...";
 
                 //Crea icona di notifica
                 notifyIcon = new System.Windows.Forms.NotifyIcon
@@ -70,14 +70,14 @@ namespace RUMAutoConnector
 
                 //Inizia a eseguire il codice di check di connessione ogni 15 secondi per sicurezza
                 StartDispatcherTimer();
-                notifyIcon.ShowNotify(Title, Risultato.Content.ToString());
+                notifyIcon.ShowNotify(Title, Risultato.Text.ToString());
 
                 //Avvio il sistema di statistiche
                 statistics = new StatisticsManager();
             }
             catch (Exception ex)
             {
-                Risultato.Content = $"{ex.Message} {DateTime.Now}";
+                Risultato.Text = ex.Message.Dateify();
                 notifyIcon.ShowNotify(Title, ex.Message);
             }
         }
@@ -90,7 +90,7 @@ namespace RUMAutoConnector
 
         protected override void OnStateChanged(EventArgs e)
         {
-            if (WindowState == System.Windows.WindowState.Minimized)
+            if (WindowState == WindowState.Minimized)
             {
                 Hide();
                 if(Properties.Settings.Default.FirstHide)
@@ -118,6 +118,7 @@ namespace RUMAutoConnector
             }
             
             SaveButton.Content = "Salvato!";
+            SaveButton.FontWeight = FontWeights.Normal;
             AutoConnector.Connect();
         }
 
@@ -166,7 +167,7 @@ namespace RUMAutoConnector
             if (Properties.Settings.Default.Disabled)
             {
                 Disabilita.Content = "Abilita il servizio";
-                Risultato.Content = $"Servizio disabilitato. {DateTime.Now}";
+                Risultato.Text = "Servizio disabilitato.".Dateify();
             }
             else
             {
@@ -215,6 +216,30 @@ namespace RUMAutoConnector
             Properties.Settings.Default.Notifications = !Properties.Settings.Default.Notifications;
             Properties.Settings.Default.Save();
             Notifications.IsChecked = Properties.Settings.Default.Notifications;
+        }
+
+        private void Username_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateSaveButton();
+        }
+
+        private void Password_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            UpdateSaveButton();
+        }
+
+        private void UpdateSaveButton()
+        {
+            if(Properties.Settings.Default.Username != Username.Text ||
+               Properties.Settings.Default.Password != Password.Password)
+            {
+                if (!string.IsNullOrEmpty(Username.Text) && !string.IsNullOrEmpty(Password.Password))
+                {
+                    SaveButton.FontWeight = FontWeights.Bold;
+                }
+                return;
+            }
+            SaveButton.FontWeight = FontWeights.Normal;
         }
     }
 }

@@ -53,5 +53,10 @@ namespace RUMAutoConnector
             if(Properties.Settings.Default.Notifications)
                 icon.ShowBalloonTip(1, Title, Message, ToolTipIcon.Info);
         }
+
+        public  static string Dateify(this string s)
+        {
+            return $"[{DateTime.Now.ToLongTimeString()}] " + s;
+        }
     }
 }
