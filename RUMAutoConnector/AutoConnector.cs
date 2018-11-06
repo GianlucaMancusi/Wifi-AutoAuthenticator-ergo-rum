@@ -60,7 +60,7 @@ namespace RUMAutoConnector
                     bool result = await Request();
                     if (result)
                     {
-                        MainWindow.Instance.Risultato.Text = "Connesso con successo alle".Dateify();
+                        MainWindow.Instance.Risultato.Text = $"Connessione effettuata alla rete {SSID}.".Dateify();
                         if(!IsConnected && !NotifiedConnectionSuccessOneTime)
                         {
                             MainWindow.Instance.notifyIcon.ShowNotify(MainWindow.Instance.Title, MainWindow.Instance.Risultato.Text.ToString());
