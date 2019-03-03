@@ -1,6 +1,9 @@
 # ergo-rum :sparkles: Wifi auto connector and authenticator for Windows PC
 This tool was developed for those who live in the RUM residence in Modena.
 
+### How to install
+Download a release from [HERE](https://github.com/GianlucaMancusi/Wifi-AutoAuthenticator-ergo-rum/releases)
+
 ### Reason for which it was developed
 As soon as I arrived at the residence I noticed that the way to connect to the network was boring.
 So I decided to automate the authentication process to keep the connection always active with this support software.
@@ -16,6 +19,3 @@ So I decided to automate the authentication process to keep the connection alway
 
 ### Help in development
 If you notice any problems, bugs, or you are planning to integrate other functions then do not hesitate to pull request.
-
-> Automatizza senza esitare.
-> - Gianluca Mancusi
