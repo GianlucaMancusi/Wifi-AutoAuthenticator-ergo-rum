@@ -21,6 +21,7 @@ namespace RUMAutoConnector
         public const string SSID = "ergo-rum";
 
         public const int CHECK_AFTER_SECONDS = 10;
+        public const int CHECK_CONNECTED_DEVICES_AFTER_REFRESHES = 30;
         public static bool IsConnected = false;
         public static bool NotifiedConnectionSuccessOneTime = false;
 
@@ -33,6 +34,13 @@ namespace RUMAutoConnector
         /// Metodo che richiama un tentativo di connessione al wifi ergo
         /// </summary>
         public static void Connect() => Connect(null, null);
+
+        /// <summary>
+        /// Contatore di quanti dispositivi sono connessi, si aggiorna ogni CHECK_CONNECTED_DEVICES_AFTER_REFRESHES aggiornamenti del wifi.
+        /// Per aggiornarsi pinga tutta la rete (genera 253 datagram sulla rete, è rischioso usarlo troppo)
+        /// </summary>
+        public static volatile uint ConnectedDevices = 0;
+        public static uint CountdownToCountConnectedDevices = 2; //if 0 => count, it's a countdown that starts from CHECK_CONNECTED_DEVICES_AFTER_REFRESHES
 
         /// <summary>
         /// Metodo che richiama un tentativo di connessione al wifi ergo usato per sottoscriversi agli eventi
@@ -111,6 +119,38 @@ namespace RUMAutoConnector
             }
         }
 
+        private static void CheckHowManyDevicesAreConnected()
+        {
+            CountdownToCountConnectedDevices--;
+            if (CountdownToCountConnectedDevices != 0)
+            {
+                return;
+            }
+            Console.WriteLine("Pinging the whole network to count how many devices are connected...");
+            CountdownToCountConnectedDevices = CHECK_CONNECTED_DEVICES_AFTER_REFRESHES;
+
+            ConnectedDevices = 0;
+            for (int i = 1; i < 254; i++)
+            {
+                PingIt(i);
+            }
+        }
+
+        private static async void PingIt(int i)
+        {
+            Ping ping = new Ping();
+            PingReply reply = await ping.SendPingAsync("10.250.62." + i);
+            if (reply.Status == IPStatus.Success)
+            {
+                ConnectedDevices++;
+                Console.WriteLine("10.250.62." + i + " found on this network!");
+            }
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                MainWindow.Instance.DispConnessi.Content = ConnectedDevices;
+            }));
+        }
+
         private static async Task<bool> Request()
         {
             ServicePointManager.Expect100Continue = true;
@@ -131,7 +171,11 @@ namespace RUMAutoConnector
                             {
                                 return await Authenticate();
                             }
-                            else throw new AppException($"Sei connesso alla rete {SSID}.");
+                            else
+                            {
+                                CheckHowManyDevicesAreConnected();
+                                throw new AppException($"Sei connesso alla rete {SSID}.");
+                            }
                         }
                         else throw new AppException($"Prova a riconnetterti alla rete {SSID}");
                     }

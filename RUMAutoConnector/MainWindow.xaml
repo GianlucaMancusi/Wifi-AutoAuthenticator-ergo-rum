@@ -39,7 +39,8 @@
             </TabItem>
             <TabItem Header="Statistiche">
                 <Grid Background="#FFE5E5E5">
-                    <Label Content="Qui saranno visibili info statistiche" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label Content="Connessi: " HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="DispConnessi" Content="0" VerticalAlignment="Top" Margin="64,0,120.333,0"/>
                 </Grid>
             </TabItem>
         </TabControl>
